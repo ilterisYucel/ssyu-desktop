@@ -10,11 +10,17 @@ import {
   InputRightElement,
   Spacer,
 } from "@chakra-ui/react";
+import { useDisclosure } from '@chakra-ui/react';
+
 import { FaSearch } from "react-icons/fa";
 import { FaFilter, FaSort } from "react-icons/fa6";
 
-const PageToolbar = ({ inputPlaceholder, buttonText }) => {
+const PageToolbar = ({ inputPlaceholder, buttonText, modalComponent }) => {
+  const {isOpen, onClose, onOpen} = useDisclosure();
+  const ModalCompoent = modalComponent
+  const modal = modalComponent && <ModalCompoent isOpen={isOpen} onOpen={onOpen} onClose={onClose} /> 
   return (
+    <>
     <Flex>
       <Box paddingTop={8} paddingLeft={4} width="66%">
         <InputGroup>
@@ -44,9 +50,12 @@ const PageToolbar = ({ inputPlaceholder, buttonText }) => {
       </Box>
       <Spacer />
       <Box paddingTop={8} paddingRight={4}>
-        <Button colorScheme="red">{buttonText}</Button>
+        <Button colorScheme="red" onClick={onOpen}>{buttonText}</Button>
       </Box>
     </Flex>
+    {modal && modal}
+    </>
+
   );
 };
 

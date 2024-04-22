@@ -48,7 +48,7 @@ const formatDate = (date) => {
 
 const dateFormat = (date) => {
 	date = new Date(date);
-
+	
 	return date.toLocaleDateString("tr-Tr", {
 		year: "numeric",
 		month: "2-digit",

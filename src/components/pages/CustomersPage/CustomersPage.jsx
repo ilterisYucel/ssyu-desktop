@@ -4,8 +4,7 @@ import { CustomerCard } from "../../modules/index.js";
 import { client } from "../../../utils/requestUtils.js";
 import { CustomerContext } from "../../../context/index.js";
 
-import PageContentGrid from "../../modules/PageContentGrid/index.js";
-import { PageToolbar } from "../../modules/index.js";
+import { PageToolbar, AddCustomerModal, PageContentGrid } from "../../modules/index.js";
 
 const CustomersPage = () => {
   const [customersState, setCustomersState] = useState([]);
@@ -29,7 +28,7 @@ const CustomersPage = () => {
   const cols = customers.map((customer) => <CustomerCard data={customer} />);
   const content = <PageContentGrid cols={cols} />;
   const toolbar = (
-    <PageToolbar inputPlaceholder="Müşteri Ara" buttonText={"Müşteri Ekle"} />
+    <PageToolbar inputPlaceholder="Müşteri Ara" buttonText={"Müşteri Ekle"} modalComponent={AddCustomerModal} />
   );
 
   return <AuthLayout toolbar={toolbar} children={content}></AuthLayout>;

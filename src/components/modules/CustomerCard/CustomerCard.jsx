@@ -38,12 +38,12 @@ const CustomerCard = ({ data }) => {
   return (
     <Card
       direction={{ base: "column", sm: "row" }}
-      maxHeight="275px"
       overflow="hidden"
     >
       <Center>
         <Image
           objectFit="contain"
+          objectPosition="center"
           padding={8}
           boxSize={{ base: "100%", md: "200px", lg: "250px" }}
           src={avatar}

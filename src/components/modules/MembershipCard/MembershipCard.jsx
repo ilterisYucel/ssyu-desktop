@@ -39,7 +39,6 @@ const MembershipCard = ({ data }) => {
     <Card
       key={id}
       direction={{ base: "column", sm: "row" }}
-      maxHeight="275px"
       overflow="hidden"
     >
       <Center>

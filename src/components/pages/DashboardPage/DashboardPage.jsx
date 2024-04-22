@@ -34,19 +34,21 @@ ChartJS.register(
 );
 const ChartGrid = ({ chart1, chart2, chart3, chart4 }) => {
   return (
-    <SimpleGrid columns={{ base: 1, lg: 2 }}>
+    <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={4} padding={8}>
       <Center>
-        <Box padding={16}>{chart1}</Box>
+        {chart1}
       </Center>
       <Center>
-        <Box padding={16}>{chart2}</Box>
+        {chart2}
       </Center>
       <Center>
-        <Box padding={16}>{chart3}</Box>
+        {chart3}
       </Center>
       <Center>
-        <Box padding={16}>{chart4}</Box>
+        {chart4}
       </Center>
+      <Center></Center>
+      <Center></Center>
     </SimpleGrid>
   );
 };

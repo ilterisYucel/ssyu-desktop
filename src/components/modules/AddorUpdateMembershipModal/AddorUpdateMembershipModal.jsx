@@ -8,11 +8,7 @@ import {
   ModalFooter,
   Button,
   ModalBody,
-  Input,
-  InputLeftAddon,
   InputGroup,
-  InputLeftElement,
-  InputRightElement,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
@@ -30,52 +26,95 @@ import { MdPayments } from "react-icons/md";
 
 import { CustomerContext, MembershipContext } from "../../../context";
 import { client } from "../../../utils/requestUtils";
-import { dateAddition } from "../../../utils/valueUtils";
+import { dateAddition, isTrue, isFalse } from "../../../utils/valueUtils";
 
-const AddMembershipModal = ({ isOpen, onOpen, onClose }) => {
+const AddorUpdateMembershipModal = ({ isOpen, onOpen, onClose, data }) => {
   const { customers } = useContext(CustomerContext);
-  const { addMembership } = useContext(MembershipContext);
-  const [recordDate, setRecordDate] = useState(new Date());
-  const [customerId, setCustomerId] = useState("");
-  const [duration, setDuration] = useState(0);
-  const [payment, setPayment] = useState(null);
+  const mode = data ? "update" : "create";
+  const initialState = {
+    customerId: mode === "create" ? "" : data.customerId,
+    beginDate: mode === "create" ? new Date() : data.beginDate,
+    duation: mode === "create" ? 0 : data.duration,
+    endDate: mode === "create" ? new Date() : data.endDate,
+    payment: "create" ? null : data.payment,
+  };
+  const { updateMembership, addMembership } = useContext(MembershipContext);
+  const [recordDate, setRecordDate] = useState(initialState.beginDate);
+  const [customerId, setCustomerId] = useState(initialState.customerId);
+  const [duration, setDuration] = useState(initialState.duation);
+  const [payment, setPayment] = useState(initialState.payment);
 
   const toast = useToast();
+  console.log(data);
 
-  const closeModal = () => {
-    setRecordDate(null);
-    setCustomerId(null);
-    setDuration(null);
-    setPayment(null);
+  const close = () => {
+    setRecordDate(initialState.beginDate);
+    setCustomerId(initialState.customerId);
+    setDuration(initialState.duation);
+    setPayment(initialState.payment);
+    onClose(true);
   };
 
   const submitMembership = () => {
     if (!recordDate || !customerId || !duration || payment === null) {
-      toast({
-        title: "Üyelik Oluşturulamadı.",
-        description: "Tüm alanlar doldurulmalıdır.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+      const badRequestToast =
+        mode === "create"
+          ? {
+              title: "Üyelik Oluşturulamadı.",
+              description: "Tüm alanlar doldurulmalıdır.",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+            }
+          : {
+              title: "Üyelik güncellenemedi.",
+              description: "Tüm alanlar doldurulmalıdır.",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+            };
+      toast(badRequestToast);
       return;
     }
     const createMembershipPromise = createMembership();
-    const successToast = {
-      title: "Üyelik Oluşturuldu.",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    };
-    const pendingToast = {
-      title: "Üyelik oluşturuluyor...",
-      status: "info",
-    };
-    const failToast = {
-      title: "Üyelik oluşturulamadı.",
-      description: `Sunucu yanıt vermiyor olabilir.`,
-      status: "error",
-    };
+    const successToast =
+      mode === "create"
+        ? {
+            title: "Üyelik Oluşturuldu.",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+            onClose: isOpen && close,
+          }
+        : {
+            title: "Üyelik Güncellendi.",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+            onClose: isOpen && close,
+          };
+    const pendingToast =
+      mode === "create"
+        ? {
+            title: "Üyelik oluşturuluyor...",
+            status: "info",
+          }
+        : {
+            title: "Üyelik güncelleniyor...",
+            status: "info",
+          };
+    const failToast =
+      mode === "create"
+        ? {
+            title: "Üyelik oluşturulamadı.",
+            description: `Sunucu yanıt vermiyor olabilir.`,
+            status: "error",
+          }
+        : {
+            title: "Üyelik güncellenemedi.",
+            description: `Sunucu yanıt vermiyor olabilir.`,
+            status: "error",
+          };
     toast.promise(createMembershipPromise, {
       success: successToast,
       error: failToast,
@@ -93,30 +132,37 @@ const AddMembershipModal = ({ isOpen, onOpen, onClose }) => {
         endDate: dateAddition(new Date(recordDate), duration),
       };
       const response = await client.post("memberships", newMemberships);
-      addMembership(response.data);
-      onClose(true);
-      closeModal();
+      updateMembership(data.id, response.data);
+      close();
     } catch (err) {
       throw new Error(err);
     }
   };
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} onCloseComplete={close}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Yeni Üyelik</ModalHeader>
-        <ModalCloseButton />
+        <ModalHeader>
+          {mode === "create" ? "Yeni Üyelik" : "Güncelle"}
+        </ModalHeader>
+        <ModalCloseButton onClick={close} />
         <ModalBody>
           <form>
             <FormControl isRequired={true}>
               <Box paddingBottom={4}>
                 <Select
+                  value={customerId}
                   icon={<IoPersonCircleSharp />}
                   placeholder="Müşteri Seçiniz"
                   onChange={(event) => setCustomerId(event.currentTarget.value)}
                 >
                   {customers.map((customer) => (
-                    <option value={customer.id}>{customer.name}</option>
+                    <option
+                      selected={customerId === customer.id}
+                      value={customer.id}
+                    >
+                      {customer.name}
+                    </option>
                   ))}
                 </Select>
               </Box>
@@ -161,23 +207,28 @@ const AddMembershipModal = ({ isOpen, onOpen, onClose }) => {
             <FormControl isRequired={true}>
               <Box paddingBottom={4}>
                 <Select
+                  value={isTrue(payment)}
                   icon={<MdPayments />}
                   placeholder="Ödeme alındı mı"
                   onChange={(event) => setPayment(event.currentTarget.value)}
                 >
-                  <option value={true}>Alındı</option>
-                  <option value={false}>Alınmadı</option>
+                  <option selected={isTrue(payment)} value={true}>
+                    Alındı
+                  </option>
+                  <option selected={isFalse(payment)} value={false}>
+                    Alınmadı
+                  </option>
                 </Select>
               </Box>
             </FormControl>
           </form>
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={onClose}>
+          <Button colorScheme="blue" mr={3} onClick={close}>
             İptal
           </Button>
           <Button colorScheme="red" onClick={submitMembership}>
-            Ekle
+            {mode === "create" ? "Ekle" : "Güncelle"}
           </Button>
         </ModalFooter>
       </ModalContent>
@@ -185,4 +236,4 @@ const AddMembershipModal = ({ isOpen, onOpen, onClose }) => {
   );
 };
 
-export default AddMembershipModal;
+export default AddorUpdateMembershipModal;

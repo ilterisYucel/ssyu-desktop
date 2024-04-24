@@ -3,7 +3,7 @@ import { AuthLayout } from "../../layouts/index.js";
 import { MembershipContext } from "../../../context/MembershipContext.jsx";
 import { client } from "../../../utils/requestUtils.js";
 import {
-  AddMembershipModal,
+  AddorUpdateMembershipModal,
   MembershipCard,
   NoRecords,
 } from "../../modules/index.js";
@@ -35,7 +35,7 @@ const MembershipsPage = () => {
     <PageToolbar
       inputPlaceholder="Üyelik Ara"
       buttonText={"Üyelik Ekle"}
-      modalComponent={AddMembershipModal}
+      modalComponent={AddorUpdateMembershipModal}
     />
   );
   return <AuthLayout toolbar={toolbar} children={content}></AuthLayout>;

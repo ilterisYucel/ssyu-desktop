@@ -7,7 +7,7 @@ import { NoRecords } from "../../modules/index.js";
 
 import {
   PageToolbar,
-  AddCustomerModal,
+  AddorUpdateCustomerModal,
   PageContentGrid,
 } from "../../modules/index.js";
 
@@ -35,7 +35,7 @@ const CustomersPage = () => {
     <PageToolbar
       inputPlaceholder="Müşteri Ara"
       buttonText={"Müşteri Ekle"}
-      modalComponent={AddCustomerModal}
+      modalComponent={AddorUpdateCustomerModal}
     />
   );
 

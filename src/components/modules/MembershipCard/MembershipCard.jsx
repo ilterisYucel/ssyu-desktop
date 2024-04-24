@@ -11,6 +11,7 @@ import {
   CardFooter,
   useDisclosure,
   useToast,
+  ButtonGroup,
 } from "@chakra-ui/react";
 import React, { useContext } from "react";
 import { CustomerContext } from "../../../context/index.js";
@@ -23,6 +24,7 @@ import { client } from "../../../utils/requestUtils.js";
 import { MembershipContext } from "../../../context/index.js";
 import MembershipImage from "../../../assets/images/membership.png";
 import { AddorUpdateMembershipModal } from "../../modules/index.js";
+import { isFalse, isTrue } from "../../../utils/valueUtils.js";
 
 const DataCard = ({ icon, data }) => {
   return (
@@ -38,13 +40,48 @@ const DataCard = ({ icon, data }) => {
 const MembershipCard = ({ data }) => {
   const { id, customerId, beginDate, duration, endDate, payment } = data;
   const { getCustomers } = useContext(CustomerContext);
-  const { deleteMembership } = useContext(MembershipContext);
+  const { deleteMembership, updateMembership } = useContext(MembershipContext);
   const { onOpen, isOpen, onClose } = useDisclosure();
   const toast = useToast();
 
   const customer = getCustomers().filter(
     (customer) => customer.id === customerId
   )[0];
+
+  const pay = async () => {
+    const response = await client.put(`memberships/${id}`, {
+      customerId,
+      beginDate,
+      duration,
+      endDate,
+      payment: true,
+    });
+    updateMembership(id, response.data);
+  };
+
+  const payCallback = () => {
+    const payPromise = pay();
+    const successToast = {
+      title: "Ödeme onaylandı.",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    };
+    const pendingToast = {
+      title: "Ödeme onaylanıyor...",
+      status: "info",
+    };
+    const failToast = {
+      title: "Ödeme onaylanamadı.",
+      description: `Sunucu yanıt vermiyor olabilir.`,
+      status: "error",
+    };
+    toast.promise(payPromise, {
+      success: successToast,
+      error: failToast,
+      loading: pendingToast,
+    });
+  };
 
   const delMembership = async () => {
     try {
@@ -96,8 +133,13 @@ const MembershipCard = ({ data }) => {
   );
 
   const checkPaymentButton = (
-    <Button colorScheme="green" w="100%">
-      Ödeme Onayı
+    <Button
+      colorScheme="green"
+      w="100%"
+      isDisabled={isTrue(payment)}
+      onClick={payCallback}
+    >
+      Ödendi
     </Button>
   );
 
@@ -126,17 +168,17 @@ const MembershipCard = ({ data }) => {
               <DataCard icon={LuCalendarOff} data={dateFormat(endDate)} />
               <DataCard
                 icon={MdOutlinePayments}
-                data={payment ? "Ödeme Alındı" : "Ödeme Alınmadı"}
+                data={isTrue(payment) ? "Ödeme Alındı" : "Ödeme Alınmadı"}
               />
             </Stack>
           </CardBody>
 
           <CardFooter>
-            <HStack spacing="8px">
+            <ButtonGroup spacing="8px">
               {updateButton}
               {deleteButton}
               {checkPaymentButton}
-            </HStack>
+            </ButtonGroup>
           </CardFooter>
         </Stack>
       </Card>

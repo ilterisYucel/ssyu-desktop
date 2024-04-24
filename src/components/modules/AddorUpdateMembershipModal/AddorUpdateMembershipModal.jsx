@@ -33,11 +33,12 @@ const AddorUpdateMembershipModal = ({ isOpen, onOpen, onClose, data }) => {
   const mode = data ? "update" : "create";
   const initialState = {
     customerId: mode === "create" ? "" : data.customerId,
-    beginDate: mode === "create" ? new Date() : data.beginDate,
+    beginDate: mode === "create" ? new Date() : new Date(data.beginDate),
     duation: mode === "create" ? 0 : data.duration,
     endDate: mode === "create" ? new Date() : data.endDate,
-    payment: "create" ? null : data.payment,
+    payment: mode === "create" ? null : data.payment,
   };
+
   const { updateMembership, addMembership } = useContext(MembershipContext);
   const [recordDate, setRecordDate] = useState(initialState.beginDate);
   const [customerId, setCustomerId] = useState(initialState.customerId);
@@ -45,7 +46,6 @@ const AddorUpdateMembershipModal = ({ isOpen, onOpen, onClose, data }) => {
   const [payment, setPayment] = useState(initialState.payment);
 
   const toast = useToast();
-  console.log(data);
 
   const close = () => {
     setRecordDate(initialState.beginDate);
@@ -121,7 +121,6 @@ const AddorUpdateMembershipModal = ({ isOpen, onOpen, onClose, data }) => {
       loading: pendingToast,
     });
   };
-
   const createMembership = async () => {
     try {
       const newMemberships = {
@@ -131,13 +130,19 @@ const AddorUpdateMembershipModal = ({ isOpen, onOpen, onClose, data }) => {
         payment,
         endDate: dateAddition(new Date(recordDate), duration),
       };
-      const response = await client.post("memberships", newMemberships);
-      updateMembership(data.id, response.data);
+      const response =
+        mode === "create"
+          ? await client.post("memberships", newMemberships)
+          : await client.put(`memberships/${data.id}`, newMemberships);
+      mode === "create"
+        ? addMembership(response.data)
+        : updateMembership(data.id, response.data);
       close();
     } catch (err) {
       throw new Error(err);
     }
   };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} onCloseComplete={close}>
       <ModalOverlay />
@@ -207,7 +212,6 @@ const AddorUpdateMembershipModal = ({ isOpen, onOpen, onClose, data }) => {
             <FormControl isRequired={true}>
               <Box paddingBottom={4}>
                 <Select
-                  value={isTrue(payment)}
                   icon={<MdPayments />}
                   placeholder="Ödeme alındı mı"
                   onChange={(event) => setPayment(event.currentTarget.value)}

@@ -10,7 +10,7 @@ const membershipContextWrapper = (component) => ({
     initialMembershipContext.memberships = data;
     component?.setState({ context: membershipContextWrapper(component) });
   },
-  getCustomers: () => initialMembershipContext.memberships,
+  getMemberships: () => initialMembershipContext.memberships,
   resetMemberships: () => {
     initialMembershipContext.memberships = [];
     component?.setState({ context: membershipContextWrapper(component) });
@@ -30,11 +30,11 @@ const membershipContextWrapper = (component) => ({
     component?.setState({ context: membershipContextWrapper(component) });
   },
   updateMembership: (membershipId, data) => {
-    const oldCustomer = initialMembershipContext.memberships.filter(
+    const oldMembership = initialMembershipContext.memberships.filter(
       (membership) => membership.id === membershipId
     )[0];
-    const newMembership = { ...oldCustomer, ...data };
-    initialMembershipContext.customers = [
+    const newMembership = { ...oldMembership, ...data };
+    initialMembershipContext.memberships = [
       ...initialMembershipContext.memberships.filter(
         (membership) => membership.id !== membershipId
       ),

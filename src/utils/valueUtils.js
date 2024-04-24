@@ -59,8 +59,6 @@ const dateFormat = (date) => {
 };
 
 const dateAddition = (date, duration) => {
-  console.log(date);
-  console.log(duration);
   return new Date(date.setMonth(date.getMonth() + duration));
 };
 

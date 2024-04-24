@@ -31,16 +31,14 @@ const DataCard = ({ icon, data }) => {
 };
 
 const MembershipCard = ({ data }) => {
-  const { id, userId, beginDate, duration, endDate, payment } = data;
+  const { id, customerId, beginDate, duration, endDate, payment } = data;
   const { getCustomers } = useContext(CustomerContext);
-  const user = getCustomers().filter((customer) => customer.id === userId)[0];
+  const customer = getCustomers().filter(
+    (customer) => customer.id === customerId
+  )[0];
 
   return (
-    <Card
-      key={id}
-      direction={{ base: "column", sm: "row" }}
-      overflow="hidden"
-    >
+    <Card key={id} direction={{ base: "column", sm: "row" }} overflow="hidden">
       <Center>
         <Image
           objectFit="contain"
@@ -53,9 +51,9 @@ const MembershipCard = ({ data }) => {
       <Stack>
         <CardBody>
           <Stack spacing="2">
-            <DataCard icon={IoPersonCircle} data={user.name} />
+            <DataCard icon={IoPersonCircle} data={customer?.name} />
             <DataCard icon={LuCalendarCheck2} data={dateFormat(beginDate)} />
-            <DataCard icon={GiDuration} data={duration} />
+            <DataCard icon={GiDuration} data={`${duration} Ay`} />
             <DataCard icon={LuCalendarOff} data={dateFormat(endDate)} />
             <DataCard
               icon={MdOutlinePayments}

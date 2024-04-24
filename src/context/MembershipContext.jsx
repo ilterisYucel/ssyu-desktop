@@ -20,6 +20,27 @@ const membershipContextWrapper = (component) => ({
       ...initialMembershipContext.memberships,
       membership,
     ];
+    component?.setState({ context: membershipContextWrapper(component) });
+  },
+  deleteMembership: (membershipId) => {
+    const newCustomers = initialMembershipContext.memberships.filter(
+      (membership) => membership.id !== membershipId
+    );
+    initialMembershipContext.memberships = [...newCustomers];
+    component?.setState({ context: membershipContextWrapper(component) });
+  },
+  updateMembership: (membershipId, data) => {
+    const oldCustomer = initialMembershipContext.memberships.filter(
+      (membership) => membership.id === membershipId
+    )[0];
+    const newMembership = { ...oldCustomer, ...data };
+    initialMembershipContext.customers = [
+      ...initialMembershipContext.memberships.filter(
+        (membership) => membership.id !== membershipId
+      ),
+      newMembership,
+    ];
+    component?.setState({ context: membershipContextWrapper(component) });
   },
 });
 

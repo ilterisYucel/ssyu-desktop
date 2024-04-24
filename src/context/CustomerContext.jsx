@@ -20,16 +20,28 @@ const customerContextWrapper = (component) => ({
       ...initialCustomerContext.customers,
       customer,
     ];
+    component?.setState({ context: customerContextWrapper(component) });
   },
   deleteCustomer: (customerId) => {
-    const newCustomers = initialCustomerContext.customers.filter(customer => customer.id !== customerId);
-    initialCustomerContext.customers = [...newCustomers]
+    const newCustomers = initialCustomerContext.customers.filter(
+      (customer) => customer.id !== customerId
+    );
+    initialCustomerContext.customers = [...newCustomers];
+    component?.setState({ context: customerContextWrapper(component) });
   },
   updateCustomer: (customerId, data) => {
-    const oldCustomer = initialCustomerContext.customers.filter(customer => customer.id === customerId)[0];
-    const newCsutomer = {...oldCustomer, ...data};
-    initialCustomerContext.customers = [...initialCustomerContext.customers.filter(customer => customer.id !== customerId), newCsutomer];
-  }
+    const oldCustomer = initialCustomerContext.customers.filter(
+      (customer) => customer.id === customerId
+    )[0];
+    const newCsutomer = { ...oldCustomer, ...data };
+    initialCustomerContext.customers = [
+      ...initialCustomerContext.customers.filter(
+        (customer) => customer.id !== customerId
+      ),
+      newCsutomer,
+    ];
+    component?.setState({ context: customerContextWrapper(component) });
+  },
 });
 
 export const CustomerContext = React.createContext(customerContextWrapper());

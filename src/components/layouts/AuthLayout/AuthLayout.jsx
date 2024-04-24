@@ -8,9 +8,9 @@ import { SidenavProvider } from "../../modules/index.js";
 
 export default function AuthLayout({ toolbar = null, children }) {
   const navItems = [
-    { icon: BsBarChart, label: "Dashboard", to: "/" },
-    { icon: PiPersonSimpleBold, label: "Customers", to: "/customers" },
-    { icon: LiaFileContractSolid, label: "Memberships", to: "/memberships" },
+    { icon: BsBarChart, label: "Panel", to: "/" },
+    { icon: PiPersonSimpleBold, label: "Müşteriler", to: "/customers" },
+    { icon: LiaFileContractSolid, label: "Üyelikler", to: "/memberships" },
   ];
   return (
     <Grid

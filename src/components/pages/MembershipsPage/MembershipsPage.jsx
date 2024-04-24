@@ -2,7 +2,11 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthLayout } from "../../layouts/index.js";
 import { MembershipContext } from "../../../context/MembershipContext.jsx";
 import { client } from "../../../utils/requestUtils.js";
-import { MembershipCard, NoRecords } from "../../modules/index.js";
+import {
+  AddMembershipModal,
+  MembershipCard,
+  NoRecords,
+} from "../../modules/index.js";
 import PageContentGrid from "../../modules/PageContentGrid/index.js";
 import { PageToolbar } from "../../modules/index.js";
 
@@ -28,7 +32,11 @@ const MembershipsPage = () => {
   ));
   const content = cols.length ? <PageContentGrid cols={cols} /> : <NoRecords />;
   const toolbar = (
-    <PageToolbar inputPlaceholder="Üyelik Ara" buttonText={"Üyelik Ekle"} />
+    <PageToolbar
+      inputPlaceholder="Üyelik Ara"
+      buttonText={"Üyelik Ekle"}
+      modalComponent={AddMembershipModal}
+    />
   );
   return <AuthLayout toolbar={toolbar} children={content}></AuthLayout>;
 };
